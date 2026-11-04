@@ -1,0 +1,135 @@
+/* CineLog: tema escuro "sala de cinema". Tokens no :root; troque aqui para mudar o visual todo. */
+:root {
+  --fundo: #11161d;
+  --superficie: #1a212b;
+  --superficie-2: #232c39;
+  --borda: #2f3a4a;
+  --texto: #e8edf3;
+  --suave: #93a1b4;
+  --estrela: #f2b84b;
+  --acao: #34c38f;
+  --acao-texto: #08261b;
+  --erro: #ff8f8f;
+  --titulo: 'Bricolage Grotesque', system-ui, sans-serif;
+  --corpo: 'Source Sans 3', system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 400 1rem/1.55 var(--corpo); }
+h1, h2, h3 { font-family: var(--titulo); margin: 0; line-height: 1.15; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--acao); outline-offset: 2px; }
+[hidden] { display: none !important; }
+
+/* ---- Cabeçalho ---- */
+.topo { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+        padding: .9rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid var(--borda); background: var(--superficie); }
+.logo { font: 800 1.6rem var(--titulo); letter-spacing: -.02em; text-decoration: none; }
+.topo nav { display: flex; gap: 1.25rem; flex: 1; }
+.topo nav a { text-decoration: none; color: var(--suave); padding: .25rem 0; border-bottom: 2px solid transparent; }
+.topo nav a:hover, .topo nav a[aria-current="page"] { color: var(--texto); border-color: var(--acao); }
+.perfil-atual { display: flex; align-items: center; gap: .5rem; color: var(--suave); font-size: .95rem; }
+
+main { max-width: 1120px; margin: 0 auto; padding: 1.75rem clamp(1rem, 4vw, 3rem) 4rem; }
+
+/* ---- Controles ---- */
+input, select, textarea, button { font: inherit; color: var(--texto); }
+input, select, textarea { background: var(--superficie-2); border: 1px solid var(--borda); border-radius: 6px;
+                          padding: .5rem .7rem; width: 100%; }
+select { width: auto; }
+button, .botao { background: var(--superficie-2); border: 1px solid var(--borda); border-radius: 6px;
+                 padding: .5rem 1rem; cursor: pointer; text-decoration: none; display: inline-flex;
+                 align-items: center; gap: .4rem; }
+button:hover, .botao:hover { border-color: var(--suave); }
+button.primario { background: var(--acao); border-color: var(--acao); color: var(--acao-texto); font-weight: 600; }
+button[aria-pressed="true"] { border-color: var(--acao); color: var(--acao); }
+.erro { color: var(--erro); min-height: 1.4em; margin: .5rem 0 0; }
+.suave { color: var(--suave); }
+.chip { display: inline-block; background: var(--superficie-2); border: 1px solid var(--borda);
+        border-radius: 999px; padding: .1rem .7rem; font-size: .85rem; margin: 0 .35rem .35rem 0; }
+.estrelas { color: var(--estrela); letter-spacing: .08em; }
+
+/* ---- Explorar ---- */
+.filtros { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: .75rem; align-items: center; }
+.filtros select { width: 100%; }
+.contagem { color: var(--suave); margin: 1rem 0 .75rem; }
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1.1rem; }
+.card { text-decoration: none; display: block; }
+.card:hover .poster, .card:focus-visible .poster { outline: 2px solid var(--acao); }
+.poster { aspect-ratio: 2 / 3; border-radius: 6px; overflow: hidden; display: grid; place-items: center;
+          font: 800 1.2rem/1.15 var(--titulo); text-align: center; padding: .8rem; border: 1px solid var(--borda); }
+.poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-info { display: block; margin-top: .4rem; font-size: .9rem; }
+.card-info strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mais { display: block; margin: 2rem auto 0; }
+
+/* ---- Página do filme ---- */
+.filme { display: grid; grid-template-columns: 260px 1fr; gap: 2rem; align-items: start; }
+.filme .poster { position: sticky; top: 1rem; font-size: 1.6rem; }
+.filme h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -.02em; }
+.ano { font-weight: 400; color: var(--suave); }
+.dirigido { margin: .4rem 0 1rem; color: var(--suave); }
+.dirigido strong { color: var(--texto); }
+.sinopse { max-width: 65ch; }
+.elenco { max-width: 65ch; }
+.secao { margin-top: 1.75rem; }
+.secao > h2 { font-size: 1.15rem; border-bottom: 1px solid var(--borda); padding-bottom: .4rem; margin-bottom: .9rem; }
+
+.painel { background: var(--superficie); border: 1px solid var(--borda); border-radius: 10px; padding: 1.1rem; }
+.duas-colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.75rem; }
+.media { font: 800 3rem/1 var(--titulo); }
+.media small { font: 400 1rem var(--corpo); color: var(--suave); }
+.histograma { display: grid; gap: .25rem; margin-top: .8rem; }
+.histograma div { display: grid; grid-template-columns: 2.2rem 1fr 2rem; gap: .5rem; align-items: center; font-size: .85rem; color: var(--suave); }
+.barra { height: .6rem; background: var(--superficie-2); border-radius: 3px; overflow: hidden; }
+.barra span { display: block; height: 100%; background: var(--estrela); }
+.acoes { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.seletor-estrelas { display: flex; gap: .15rem; margin: .4rem 0 .8rem; }
+.seletor-estrelas button { background: none; border: 0; padding: .1rem; font-size: 2rem; line-height: 1; color: var(--borda); }
+.seletor-estrelas button.ligada { color: var(--estrela); }
+.form-aval label { color: var(--suave); font-size: .95rem; }
+.form-aval textarea { margin: .3rem 0 .8rem; }
+
+.avaliacoes { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+.avaliacoes li { display: grid; grid-template-columns: auto 1fr; gap: .8rem; }
+.avaliacoes .quem { display: flex; gap: .6rem; align-items: baseline; flex-wrap: wrap; }
+.avaliacoes p { margin: .25rem 0 0; max-width: 65ch; }
+.avatar { display: inline-grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%;
+          font: 800 1.1rem var(--titulo); color: #fff; flex: none; }
+.avatar.grande { width: 5rem; height: 5rem; font-size: 2.2rem; }
+
+/* ---- Perfil ---- */
+.perfil-topo { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
+.perfil-topo h1 { font-size: 2.2rem; }
+.estatisticas { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .75rem; margin: 1.5rem 0; }
+.estatisticas .painel { text-align: center; padding: .8rem; }
+.estatisticas strong { display: block; font: 800 1.8rem var(--titulo); }
+.abas { display: flex; gap: .5rem; margin: 1.5rem 0 1rem; border-bottom: 1px solid var(--borda); }
+.abas button { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: var(--suave); }
+.abas button[aria-selected="true"] { color: var(--texto); border-color: var(--acao); }
+
+/* ---- Diálogo e aviso ---- */
+dialog { background: var(--fundo); color: var(--texto); border: 1px solid var(--borda); border-radius: 12px;
+         width: min(680px, 94vw); max-height: 92vh; padding: 1.5rem; }
+dialog::backdrop { background: rgba(5, 8, 12, .75); }
+dialog h2 { font-size: 1.5rem; margin-bottom: .5rem; }
+dialog label { display: block; margin-top: .8rem; color: var(--suave); font-size: .95rem; }
+dialog label > input, dialog label > select, dialog label > textarea { margin-top: .25rem; }
+.linha { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+.linha select { width: 100%; }
+fieldset { border: 1px solid var(--borda); border-radius: 8px; margin: .9rem 0 0; }
+.opcoes { display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+.opcoes label { margin: 0; display: flex; gap: .35rem; align-items: center; color: var(--texto); }
+.opcoes input { width: auto; }
+.fim { display: flex; justify-content: flex-end; gap: .6rem; margin-top: 1.1rem; }
+.aviso { position: fixed; bottom: 1.2rem; left: 50%; transform: translate(-50%, 220%); background: var(--acao);
+         color: var(--acao-texto); padding: .6rem 1.2rem; border-radius: 8px; font-weight: 600; transition: transform .25s; }
+.aviso.visivel { transform: translate(-50%, 0); }
+
+@media (max-width: 800px) {
+  .filtros { grid-template-columns: 1fr 1fr; }
+  .filtros #busca, .filtros #btn-novo { grid-column: 1 / -1; }
+  .filme { grid-template-columns: 1fr; }
+  .filme .poster { position: static; max-width: 220px; }
+  .duas-colunas, .linha { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .aviso { transition: none; } }

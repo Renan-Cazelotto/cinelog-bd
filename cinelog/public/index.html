@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CineLog – Explorar filmes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topo">
+    <a class="logo" href="index.html">CineLog</a>
+    <nav aria-label="Principal">
+      <a href="index.html" aria-current="page">Filmes</a>
+      <a href="perfil.html" id="link-perfil">Meu perfil</a>
+    </nav>
+    <label class="perfil-atual">Perfil <select id="perfil-atual"></select></label>
+  </header>
+
+  <main>
+    <form class="filtros" id="filtros" role="search">
+      <input type="search" id="busca" placeholder="Buscar filme pelo título" aria-label="Buscar filme pelo título">
+      <select id="genero" aria-label="Filtrar por gênero"><option value="">Todos os gêneros</option></select>
+      <select id="ordem" aria-label="Ordenar por">
+        <option value="nota">Melhor avaliados</option>
+        <option value="populares">Mais avaliados</option>
+        <option value="recentes">Mais recentes</option>
+        <option value="titulo">Ordem alfabética</option>
+      </select>
+      <button type="button" id="btn-novo" class="primario">+ Adicionar filme</button>
+    </form>
+
+    <p id="contagem" class="contagem" aria-live="polite"></p>
+    <section id="grade" class="grade" aria-label="Filmes"></section>
+    <button type="button" id="mais" class="mais" hidden>Carregar mais</button>
+  </main>
+
+  <dialog id="dlg-novo">
+    <form id="form-novo">
+      <h2>Adicionar filme</h2>
+      <label>Título <input name="nome" required maxlength="100"></label>
+      <label>Estúdio <input name="estudio" required maxlength="30"></label>
+      <div class="linha">
+        <label>Ano <input name="ano_de_lancamento" type="number" min="1888" max="2100" required></label>
+        <label>Duração (min) <input name="duracao" type="number" min="1" required></label>
+        <label>Classificação
+          <select name="classificacao_indicativa" required>
+            <option>LIVRE</option><option>6</option><option>10</option><option>12</option>
+            <option>14</option><option>16</option><option>18</option>
+          </select>
+        </label>
+      </div>
+      <label>Sinopse <textarea name="descricao" rows="3" required maxlength="1000"></textarea></label>
+      <label>Link da imagem do pôster (opcional) <input name="poster_url" type="url" placeholder="https://..."></label>
+      <label>Diretores (separe por vírgula) <input name="diretores"></label>
+      <label>Elenco (separe por vírgula) <input name="elenco"></label>
+      <fieldset>
+        <legend>Gêneros</legend>
+        <div id="lista-generos" class="opcoes"></div>
+        <label>Outros gêneros (separe por vírgula) <input name="outros_generos" maxlength="60"></label>
+      </fieldset>
+      <p class="erro" id="erro-novo" role="alert"></p>
+      <div class="fim">
+        <button type="button" id="cancelar-novo">Cancelar</button>
+        <button type="submit" class="primario">Salvar filme</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="aviso" class="aviso" role="status"></div>
+  <script src="js/comum.js"></script>
+  <script src="js/explorar.js"></script>
+</body>
+</html>
