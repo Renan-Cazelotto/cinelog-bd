@@ -3,7 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-const { lerSessao, exigirLogin } = require('./src/auth');   // (encerra com aviso se faltar JWT_SECRET)
+const { lerSessao, exigirLogin, carregarTipoPerfil } = require('./src/auth');  // (encerra com aviso se faltar JWT_SECRET)
+
 
 const app = express();
 app.set('trust proxy', 1);      // atrás do proxy do Render: req.secure e req.ip passam a funcionar
@@ -20,9 +21,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // --- API ---
 app.use('/api/auth', require('./src/routes/auth'));                         // login, cadastro, perfis da conta
-app.use('/api/filmes', exigirLogin, require('./src/routes/filmes'));        // tudo abaixo exige login
-app.use('/api/generos', exigirLogin, require('./src/routes/generos'));
-app.use('/api/perfis', exigirLogin, require('./src/routes/perfis'));
+app.use('/api/filmes', exigirLogin, carregarTipoPerfil, require('./src/routes/filmes'));
+app.use('/api/generos', exigirLogin, carregarTipoPerfil, require('./src/routes/generos'));
+app.use('/api/perfis', exigirLogin, carregarTipoPerfil, require('./src/routes/perfis'));
 
 // --- Tratamento central de erros ---
 const ERROS_PG = {
