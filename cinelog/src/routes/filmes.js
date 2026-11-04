@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const db = require('../db');
 const { wrap, inteiro } = require('../util');
+const { exigirPerfil, exigirMaster } = require('../auth');
 
 // Em `titulo` a PK é (estudio, nome). Para a URL usamos titulo.id (criado na migração)
 // e os JOINs "traduzem" id -> (estudio, nome) para chegar em filme, avalia_filme etc.
@@ -44,12 +45,12 @@ router.get('/', wrap(async (req, res) => {
 }));
 
 // ---------------------------------------------------------------------------
-// GET /api/filmes/:id?perfil=  -> página do filme:
+// GET /api/filmes/:id  -> página do filme (o "meu" usa o perfil logado):
 // dados + diretores/elenco/gêneros + histograma + reviews + estado do perfil.
 // ---------------------------------------------------------------------------
 router.get('/:id', wrap(async (req, res) => {
   const id = inteiro(req.params.id);
-  const perfil = inteiro(req.query.perfil);
+  const perfil = req.sessao.perfil || null;   // perfil da sessão (não vem mais da URL)
 
   const filme = await db.query(`
     SELECT t.id, t.nome, t.estudio, t.ano_de_lancamento, t.duracao,
@@ -114,14 +115,14 @@ router.get('/:id', wrap(async (req, res) => {
 }));
 
 // ---------------------------------------------------------------------------
-// POST /api/filmes -> cadastra um filme completo. TRANSAÇÃO: ou grava tudo, ou nada
+// POST /api/filmes -> (somente conta MASTER) cadastra um filme completo. TRANSAÇÃO: ou grava tudo, ou nada
 // (titulo -> filme -> gêneros -> diretores -> elenco).
 // ---------------------------------------------------------------------------
 const lista = (v) => [...new Set(
   (Array.isArray(v) ? v : String(v || '').split(',')).map((s) => String(s).trim()).filter(Boolean)
 )];
 
-router.post('/', wrap(async (req, res) => {
+router.post('/', exigirMaster, wrap(async (req, res) => {   // só contas master
   const b = req.body;
   const obrigatorios = ['nome', 'estudio', 'ano_de_lancamento', 'duracao', 'classificacao_indicativa', 'descricao'];
   const faltando = obrigatorios.filter((c) => !String(b[c] ?? '').trim());
@@ -158,16 +159,15 @@ router.post('/', wrap(async (req, res) => {
 }));
 
 // ---------------------------------------------------------------------------
-// POST /api/filmes/:id/avaliacoes  { id_perfil, nota, comentario }
+// POST /api/filmes/:id/avaliacoes  { nota, comentario }
 // Cria OU atualiza (upsert) a avaliação do perfil para o filme.
 // ---------------------------------------------------------------------------
-router.post('/:id/avaliacoes', wrap(async (req, res) => {
+router.post('/:id/avaliacoes', exigirPerfil, wrap(async (req, res) => {
   const idFilme = inteiro(req.params.id);
-  const idPerfil = inteiro(req.body.id_perfil);
+  const idPerfil = req.sessao.perfil;   // sempre o perfil logado: ninguém avalia "como" outro perfil
   const nota = inteiro(req.body.nota);
   const comentario = (req.body.comentario || '').trim() || null;
 
-  if (!idPerfil) return res.status(400).json({ erro: 'Escolha um perfil para avaliar.' });
   if (!(nota >= 1 && nota <= 5)) return res.status(400).json({ erro: 'A nota deve ser de 1 a 5.' });
 
   const r = await db.query(`
@@ -184,7 +184,7 @@ router.post('/:id/avaliacoes', wrap(async (req, res) => {
 }));
 
 // ---------------------------------------------------------------------------
-// POST /api/filmes/:id/watchlist  e  POST /api/filmes/:id/curtir  { id_perfil }
+// POST /api/filmes/:id/watchlist  e  POST /api/filmes/:id/curtir  (perfil = o da sessão)
 // As duas tabelas têm as mesmas colunas, então compartilham a função "alternar":
 // se o registro existe, remove; senão, cria. (O nome da tabela vem de constantes
 // nossas, nunca do usuário.)
@@ -192,8 +192,7 @@ router.post('/:id/avaliacoes', wrap(async (req, res) => {
 function alternar(tabela) {
   return wrap(async (req, res) => {
     const idFilme = inteiro(req.params.id);
-    const idPerfil = inteiro(req.body.id_perfil);
-    if (!idPerfil) return res.status(400).json({ erro: 'Escolha um perfil primeiro.' });
+    const idPerfil = req.sessao.perfil;
 
     const del = await db.query(`
       DELETE FROM ${tabela} AS x
@@ -213,7 +212,7 @@ function alternar(tabela) {
     res.json({ ativo: true });
   });
 }
-router.post('/:id/watchlist', alternar('lista_de_desejo_filme'));
-router.post('/:id/curtir', alternar('curte_filme'));
+router.post('/:id/watchlist', exigirPerfil, alternar('lista_de_desejo_filme'));
+router.post('/:id/curtir', exigirPerfil, alternar('curte_filme'));
 
 module.exports = router;

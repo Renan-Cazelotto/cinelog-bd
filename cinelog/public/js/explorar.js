@@ -49,7 +49,8 @@ $('#form-novo').addEventListener('submit', async (e) => {
 
 // ---- Inicialização ----
 (async function iniciar() {
-  await iniciarCabecalho();
+  const sessao = await iniciarCabecalho();
+  $('#btn-novo').hidden = !sessao.conta.master;   // só conta master vê (o servidor também exige)
   try {
     const generos = await api('/api/generos');
     $('#genero').insertAdjacentHTML('beforeend', generos.map((g) => `<option>${esc(g.nome)}</option>`).join(''));

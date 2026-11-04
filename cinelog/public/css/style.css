@@ -27,7 +27,10 @@ a { color: inherit; }
 .topo nav { display: flex; gap: 1.25rem; flex: 1; }
 .topo nav a { text-decoration: none; color: var(--suave); padding: .25rem 0; border-bottom: 2px solid transparent; }
 .topo nav a:hover, .topo nav a[aria-current="page"] { color: var(--texto); border-color: var(--acao); }
-.perfil-atual { display: flex; align-items: center; gap: .5rem; color: var(--suave); font-size: .95rem; }
+.usuario { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; color: var(--suave); font-size: .95rem; }
+.usuario .avatar { width: 2rem; height: 2rem; font-size: .95rem; }
+.usuario a { color: var(--suave); }
+.usuario a:hover { color: var(--texto); }
 
 main { max-width: 1120px; margin: 0 auto; padding: 1.75rem clamp(1rem, 4vw, 3rem) 4rem; }
 
@@ -106,6 +109,28 @@ button[aria-pressed="true"] { border-color: var(--acao); color: var(--acao); }
 .abas { display: flex; gap: .5rem; margin: 1.5rem 0 1rem; border-bottom: 1px solid var(--borda); }
 .abas button { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: var(--suave); }
 .abas button[aria-selected="true"] { color: var(--texto); border-color: var(--acao); }
+
+.rodape { text-align: center; color: var(--suave); font-size: .8rem; padding: 1.5rem 1rem 2rem; border-top: 1px solid var(--borda); }
+
+/* ---- Login e escolha de perfil ---- */
+body.centralizado { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
+.cartao { background: var(--superficie); border: 1px solid var(--borda); border-radius: 12px;
+          padding: 1.75rem; width: min(420px, 100%); }
+.logo.grande { font-size: 2.2rem; display: block; margin-bottom: .25rem; }
+.formulario { display: grid; gap: .8rem; }
+.formulario label { color: var(--suave); font-size: .95rem; }
+.formulario label > input, .formulario label > select { margin-top: .25rem; }
+.cheio { width: 100%; justify-content: center; }
+.cartao .abas { margin: 1.25rem 0 1rem; }
+.centro { text-align: center; max-width: 760px; }
+.centro .cartao { margin: 1.5rem auto 0; text-align: left; }
+.perfis-grade { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.25rem; margin-top: 1.5rem; }
+.perfil-card { display: grid; justify-items: center; gap: .35rem; background: none; border: 2px solid transparent;
+               border-radius: 10px; padding: .9rem; min-width: 130px; }
+.perfil-card:hover, .perfil-card:focus-visible { border-color: var(--acao); background: var(--superficie); }
+.avatar.mais { background: var(--superficie-2); color: var(--suave); }
+.opcao-avatar { display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; }
+.opcao-avatar input { width: auto; }
 
 /* ---- Diálogo e aviso ---- */
 dialog { background: var(--fundo); color: var(--texto); border: 1px solid var(--borda); border-radius: 12px;

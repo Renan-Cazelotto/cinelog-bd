@@ -2,7 +2,7 @@
 const idParam = new URLSearchParams(location.search).get('id');
 
 async function carregar() {
-  const id = idParam || Perfil.id();
+  const id = idParam || SESSAO.perfil.id;
   if (!id) {
     $('#conteudo').innerHTML = '<p class="suave">Escolha um perfil no topo da página.</p>';
     return;
@@ -31,7 +31,7 @@ function render(p, avaliados, watchlist) {
       ${avatar(p.nome, p.imagem_de_perfil, true)}
       <div>
         <h1>${esc(p.nome)}</h1>
-        <span class="chip">${esc(p.tipo)}</span>
+        <span class="chip">${esc(p.tipo)}</span>${p.id === SESSAO.perfil.id ? ' <span class="chip">Você</span>' : ''}
       </div>
     </div>
 
@@ -67,4 +67,4 @@ function render(p, avaliados, watchlist) {
 }
 
 // Se a página mostra "o perfil escolhido" (sem ?id=), trocar o perfil no topo recarrega.
-iniciarCabecalho(() => { if (!idParam) carregar(); }).then(carregar);
+iniciarCabecalho().then(carregar);

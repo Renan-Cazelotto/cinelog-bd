@@ -2,20 +2,9 @@ const router = require('express').Router();
 const db = require('../db');
 const { wrap, inteiro } = require('../util');
 
+// A lista dos perfis da conta agora fica em /api/auth/perfis. Aqui, páginas de perfil (qualquer perfil logado pode ver).
 // IMPORTANTE: a PK de perfil é (email, nome). O email NUNCA sai na API; o site usa perfil.id.
 // Os JOINs abaixo "traduzem" id -> (email, nome) para chegar nas tabelas de avaliação etc.
-
-// GET /api/perfis -> lista de perfis (fase simples: o usuário escolhe um perfil no lugar de logar)
-router.get('/', wrap(async (req, res) => {
-  const { rows } = await db.query(`
-    SELECT p.id, p.nome, p.tipo, p.imagem_de_perfil, COUNT(a.nota)::int AS total_avaliacoes
-    FROM perfil p
-    LEFT JOIN avalia_filme a ON a.email = p.email AND a.perfil = p.nome
-    GROUP BY p.id, p.email, p.nome, p.tipo, p.imagem_de_perfil
-    ORDER BY p.nome
-  `);
-  res.json(rows);
-}));
 
 // GET /api/perfis/:id -> cabeçalho do perfil + estatísticas + gêneros mais avaliados
 router.get('/:id', wrap(async (req, res) => {

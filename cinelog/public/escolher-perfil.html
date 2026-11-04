@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Escolha seu perfil – CineLog</title>
+</head>
+<body>
+  <header class="topo">
+    <a class="logo" href="index.html">CineLog</a>
+    <nav></nav>
+    <div class="usuario"><span id="conta-nome" class="suave"></span> <button type="button" id="btn-sair">Sair</button></div>
+  </header>
+  <main class="centro">
+    <h1>Quem está avaliando?</h1>
+    <p class="suave">Escolha um dos perfis desta conta ou crie um novo.</p>
+    <div id="perfis" class="perfis-grade"></div>
+
+    <form id="form-perfil" class="cartao formulario" hidden>
+      <h2>Novo perfil</h2>
+      <label>Nome <input name="nome" required maxlength="15"></label>
+      <label>Tipo
+        <select name="tipo"><option>Adulto</option><option>Infantil</option></select>
+      </label>
+      <fieldset>
+        <legend>Imagem</legend>
+        <div id="imagens" class="opcoes"></div>
+      </fieldset>
+      <p class="erro" id="erro-perfil" role="alert"></p>
+      <div class="fim">
+        <button type="button" id="cancelar-perfil">Cancelar</button>
+        <button type="submit" class="primario">Criar perfil</button>
+      </div>
+    </form>
+  </main>
+  <div id="aviso" class="aviso" role="status"></div>
+  <script src="js/comum.js"></script>
+  <script src="js/escolher-perfil.js"></script>
+</body>
+</html>

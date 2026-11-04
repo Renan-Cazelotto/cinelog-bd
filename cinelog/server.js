@@ -1,19 +1,30 @@
-// Ponto de entrada: monta o Express, registra as rotas da API e serve o front-end.
+// Ponto de entrada: monta o Express, a sessão por cookie, as rotas da API e o front-end.
 require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const path = require('path');
+const { lerSessao, exigirLogin } = require('./src/auth');   // (encerra com aviso se faltar JWT_SECRET)
 
 const app = express();
-app.use(express.json());                                  // lê o corpo das requisições em JSON
-app.use(express.static(path.join(__dirname, 'public')));  // serve HTML/CSS/JS da pasta public
+app.set('trust proxy', 1);      // atrás do proxy do Render: req.secure e req.ip passam a funcionar
+app.use(express.json());
+app.use(cookieParser());
 
-// --- API (cada arquivo em src/routes cuida de um "assunto") ---
-app.use('/api/filmes', require('./src/routes/filmes'));
-app.use('/api/generos', require('./src/routes/generos'));
-app.use('/api/perfis', require('./src/routes/perfis'));
+// Páginas que exigem login: sem sessão, redireciona para a tela de login.
+const PAGINAS_PROTEGIDAS = new Set(['/', '/index.html', '/filme.html', '/perfil.html', '/escolher-perfil.html']);
+app.use((req, res, next) => {
+  if (PAGINAS_PROTEGIDAS.has(req.path) && !lerSessao(req)) return res.redirect('/login.html');
+  next();
+});
+app.use(express.static(path.join(__dirname, 'public')));
+
+// --- API ---
+app.use('/api/auth', require('./src/routes/auth'));                         // login, cadastro, perfis da conta
+app.use('/api/filmes', exigirLogin, require('./src/routes/filmes'));        // tudo abaixo exige login
+app.use('/api/generos', exigirLogin, require('./src/routes/generos'));
+app.use('/api/perfis', exigirLogin, require('./src/routes/perfis'));
 
 // --- Tratamento central de erros ---
-// Erros do PostgreSQL chegam com um código (err.code); traduzimos os mais comuns.
 const ERROS_PG = {
   '23503': [400, 'Referência inválida: o filme ou o perfil não existe (ou não é um filme).'],
   '23505': [409, 'Esse registro já existe.'],

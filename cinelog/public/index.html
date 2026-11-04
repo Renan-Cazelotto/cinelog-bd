@@ -16,7 +16,7 @@
       <a href="index.html" aria-current="page">Filmes</a>
       <a href="perfil.html" id="link-perfil">Meu perfil</a>
     </nav>
-    <label class="perfil-atual">Perfil <select id="perfil-atual"></select></label>
+    <div class="usuario" id="usuario"></div>
   </header>
 
   <main>
@@ -29,13 +29,14 @@
         <option value="recentes">Mais recentes</option>
         <option value="titulo">Ordem alfabética</option>
       </select>
-      <button type="button" id="btn-novo" class="primario">+ Adicionar filme</button>
+      <button type="button" id="btn-novo" class="primario" hidden>+ Adicionar filme</button>
     </form>
 
     <p id="contagem" class="contagem" aria-live="polite"></p>
     <section id="grade" class="grade" aria-label="Filmes"></section>
     <button type="button" id="mais" class="mais" hidden>Carregar mais</button>
   </main>
+  <footer class="rodape">Pôsteres via TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</footer>
 
   <dialog id="dlg-novo">
     <form id="form-novo">

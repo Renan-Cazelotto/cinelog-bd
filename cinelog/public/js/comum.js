@@ -5,12 +5,6 @@ const $ = (sel, raiz = document) => raiz.querySelector(sel);
 const esc = (t) => String(t ?? '').replace(/[&<>"']/g,
   (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-// Perfil "logado" (fase simples: escolhido no cabeçalho e guardado no navegador).
-const Perfil = {
-  id() { try { return localStorage.getItem('perfil') || ''; } catch { return ''; } },
-  salvar(id) { try { localStorage.setItem('perfil', id); } catch { /* ignora */ } },
-};
-
 // fetch + JSON; transforma erros da API em exceções com a mensagem do servidor.
 async function api(url, { method = 'GET', body } = {}) {
   const res = await fetch(url, {
@@ -19,6 +13,11 @@ async function api(url, { method = 'GET', body } = {}) {
     body: body ? JSON.stringify(body) : undefined,
   });
   const dados = await res.json().catch(() => ({}));
+  // Sessão ausente/expirada: volta para a tela de login (menos na própria tela de login).
+  if (res.status === 401 && !location.pathname.endsWith('login.html')) {
+    location.href = 'login.html';
+    throw new Error('Sessão expirada. Faça login novamente.');
+  }
   if (!res.ok) throw new Error(dados.erro || 'Algo deu errado. Tente de novo.');
   return dados;
 }
@@ -28,12 +27,31 @@ const notaFmt = (n) => (n == null ? '–' : Number(n).toFixed(1));
 const dataFmt = (d) => new Date(d).toLocaleDateString('pt-BR');
 const hue = (txt) => [...String(txt)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7);
 
-// Pôster: imagem se existir; senão um bloco colorido gerado a partir do título.
-function posterHtml(f) {
-  if (f.poster_url) return `<div class="poster"><img src="${esc(f.poster_url)}" alt="Pôster de ${esc(f.nome)}" loading="lazy"></div>`;
-  const h = hue(f.nome);
-  return `<div class="poster" role="img" aria-label="Sem pôster: ${esc(f.nome)}" style="background:linear-gradient(160deg,hsl(${h} 50% 34%),hsl(${(h + 55) % 360} 55% 16%))">${esc(f.nome)}</div>`;
+// Pôster: usa a imagem de titulo.poster_url quando existir; senão (ou se a imagem não carregar)
+// mostra um bloco colorido gerado a partir do título.
+function fundoPoster(nome) {
+  const h = hue(nome);
+  return `linear-gradient(160deg,hsl(${h} 50% 34%),hsl(${(h + 55) % 360} 55% 16%))`;
 }
+function posterHtml(f) {
+  if (f.poster_url) {
+    // referrerpolicy evita bloqueio de "hotlink" por alguns servidores de imagem
+    return `<div class="poster"><img src="${esc(f.poster_url)}" alt="Pôster de ${esc(f.nome)}" data-nome="${esc(f.nome)}" loading="lazy" referrerpolicy="no-referrer"></div>`;
+  }
+  return `<div class="poster" role="img" aria-label="Sem pôster: ${esc(f.nome)}" style="background:${fundoPoster(f.nome)}">${esc(f.nome)}</div>`;
+}
+// Se uma imagem de pôster falhar (link quebrado, sem internet), troca pelo bloco colorido.
+// O evento "error" de <img> não borbulha, por isso usamos a fase de captura (true).
+document.addEventListener('error', (e) => {
+  const img = e.target;
+  if (!(img instanceof HTMLImageElement) || !img.closest('.poster')) return;
+  const caixa = img.closest('.poster');
+  const nome = img.dataset.nome || '';
+  caixa.style.background = fundoPoster(nome);
+  caixa.setAttribute('role', 'img');
+  caixa.setAttribute('aria-label', 'Sem pôster: ' + nome);
+  caixa.textContent = nome;
+}, true);
 
 // Card da grade. `linha` é o texto/HTML sob o título (ex.: estrelas).
 function cardFilme(f, linha = '') {
@@ -58,18 +76,27 @@ function aviso(texto) {
   avisoTimer = setTimeout(() => el.classList.remove('visivel'), 2800);
 }
 
-// Preenche o seletor de perfil do cabeçalho. `aoMudar` roda quando o usuário troca de perfil.
-async function iniciarCabecalho(aoMudar) {
-  const sel = $('#perfil-atual');
+// Dados de quem está logado ({ conta: {nome, email, master}, perfil: {...} | null }), preenchido por iniciarCabecalho().
+let SESSAO = null;
+
+// Confere o login, preenche o cabeçalho e devolve a sessão. Sem perfil escolhido, leva à tela de escolha.
+async function iniciarCabecalho() {
+  SESSAO = await api('/api/auth/eu');
+  if (!SESSAO.perfil) {
+    location.href = 'escolher-perfil.html';
+    return new Promise(() => {});   // interrompe o restante da página enquanto redireciona
+  }
+  const p = SESSAO.perfil;
   const link = $('#link-perfil');
-  const atualizarLink = () => { link.href = Perfil.id() ? `perfil.html?id=${Perfil.id()}` : 'perfil.html'; };
-  try {
-    const perfis = await api('/api/perfis');
-    if (!perfis.some((p) => String(p.id) === Perfil.id()) && perfis.length) Perfil.salvar(String(perfis[0].id));
-    sel.innerHTML = perfis.length
-      ? perfis.map((p) => `<option value="${p.id}" ${String(p.id) === Perfil.id() ? 'selected' : ''}>${esc(p.nome)}</option>`).join('')
-      : '<option value="">(nenhum perfil)</option>';
-  } catch (e) { aviso(e.message); }
-  atualizarLink();
-  sel.addEventListener('change', () => { Perfil.salvar(sel.value); atualizarLink(); if (aoMudar) aoMudar(); });
+  if (link) link.href = `perfil.html?id=${p.id}`;
+  $('#usuario').innerHTML = `
+    ${avatar(p.nome, p.imagem_de_perfil)} <span>${esc(p.nome)}</span>
+    ${SESSAO.conta.master ? '<span class="chip" title="Conta com permissão para adicionar filmes">Master</span>' : ''}
+    <a href="escolher-perfil.html">Trocar perfil</a>
+    <button type="button" id="btn-sair">Sair</button>`;
+  $('#btn-sair').addEventListener('click', async () => {
+    await api('/api/auth/saida', { method: 'POST' }).catch(() => {});
+    location.href = 'login.html';
+  });
+  return SESSAO;
 }

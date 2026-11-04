@@ -7,7 +7,7 @@ const rotuloCurtir = (on) => (on ? '♥ Curtido' : '♡ Curtir');
 
 async function carregar() {
   try {
-    const f = await api(`/api/filmes/${encodeURIComponent(idFilme)}?perfil=${encodeURIComponent(Perfil.id())}`);
+    const f = await api(`/api/filmes/${encodeURIComponent(idFilme)}`);
     document.title = `${f.nome} (${f.ano_de_lancamento}) – CineLog`;
     render(f);
   } catch (e) {
@@ -17,11 +17,11 @@ async function carregar() {
 
 function render(f) {
   const meu = f.meu || {};
-  const minha = f.reviews.find((r) => String(r.id_perfil) === Perfil.id());
+  const minha = f.reviews.find((r) => String(r.id_perfil) === String(SESSAO.perfil.id));
   notaEscolhida = meu.minha_nota || 0;
   const maior = Math.max(1, ...f.histograma.map((h) => h.total));
 
-  const painelAvaliar = Perfil.id() ? `
+  const painelAvaliar = `
     <div class="acoes">
       <button type="button" data-acao="watchlist" aria-pressed="${!!meu.na_watchlist}">${rotuloWatchlist(meu.na_watchlist)}</button>
       <button type="button" data-acao="curtir" aria-pressed="${!!meu.curtido}">${rotuloCurtir(meu.curtido)}</button>
@@ -35,8 +35,7 @@ function render(f) {
       </label>
       <p class="erro" id="erro-aval" role="alert"></p>
       <button type="submit" class="primario">${meu.minha_nota ? 'Atualizar avaliação' : 'Publicar avaliação'}</button>
-    </form>`
-    : '<p class="suave">Escolha um perfil no topo da página para avaliar e salvar este filme.</p>';
+    </form>`;
 
   $('#conteudo').innerHTML = `
   <article class="filme">
@@ -89,7 +88,7 @@ $('#conteudo').addEventListener('click', async (e) => {
   const acao = e.target.closest('[data-acao]');
   if (acao) {
     try {
-      const r = await api(`/api/filmes/${idFilme}/${acao.dataset.acao}`, { method: 'POST', body: { id_perfil: Perfil.id() } });
+      const r = await api(`/api/filmes/${idFilme}/${acao.dataset.acao}`, { method: 'POST' });
       acao.setAttribute('aria-pressed', r.ativo);
       acao.textContent = acao.dataset.acao === 'watchlist' ? rotuloWatchlist(r.ativo) : rotuloCurtir(r.ativo);
     } catch (err) { aviso(err.message); }
@@ -101,11 +100,11 @@ $('#conteudo').addEventListener('submit', async (e) => {
   if (!notaEscolhida) { $('#erro-aval').textContent = 'Escolha de 1 a 5 estrelas.'; return; }
   try {
     await api(`/api/filmes/${idFilme}/avaliacoes`, { method: 'POST', body: {
-      id_perfil: Perfil.id(), nota: notaEscolhida, comentario: e.target.elements.comentario.value,
+      nota: notaEscolhida, comentario: e.target.elements.comentario.value,
     } });
     aviso('Avaliação salva');
     carregar();
   } catch (err) { $('#erro-aval').textContent = err.message; }
 });
 
-iniciarCabecalho(carregar).then(carregar);
+iniciarCabecalho().then(carregar);
