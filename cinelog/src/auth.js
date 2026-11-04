@@ -54,4 +54,16 @@ const exigirMaster = wrap(async (req, res, next) => {
   next();
 });
 
+// Descobre se o perfil da sessão é Infantil (consultado no banco a cada requisição)
+const carregarTipoPerfil = wrap(async (req, res, next) => {
+  req.infantil = false;
+  if (req.sessao.perfil) {
+    const { rows } = await db.query(
+      'SELECT tipo FROM perfil WHERE id = $1 AND email = $2',
+      [req.sessao.perfil, req.sessao.email]);
+    req.infantil = rows[0]?.tipo === 'Infantil';
+  }
+  next();
+});
+
 module.exports = { emitirSessao, limparSessao, lerSessao, exigirLogin, exigirPerfil, exigirMaster };
