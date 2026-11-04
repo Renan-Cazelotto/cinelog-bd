@@ -66,4 +66,4 @@ const carregarTipoPerfil = wrap(async (req, res, next) => {
   next();
 });
 
-module.exports = { emitirSessao, limparSessao, lerSessao, exigirLogin, exigirPerfil, exigirMaster };
+module.exports = { emitirSessao, limparSessao, lerSessao, exigirLogin, exigirPerfil, exigirMaster, carregarTipoPerfil };
