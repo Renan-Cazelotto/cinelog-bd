@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const db = require('../db');
-const { wrap, inteiro } = require('../util');
+const { wrap, inteiro, serieLivre } = require('../util');
 const { exigirPerfil, exigirMaster } = require('../auth');
 
 // Estrutura: serie (PK nome) -> temporada (PK nome + nome_da_serie) -> episodio (PK estudio + nome, que também é um titulo).
@@ -32,11 +32,11 @@ router.get('/', wrap(async (req, res) => {
     FROM serie s
     LEFT JOIN avalia_serie a ON a.nome_da_serie = s.nome
     WHERE ($1::text IS NULL OR s.nome ILIKE '%' || $1 || '%')
+      AND (NOT $4::boolean OR ${serieLivre('s.nome')})
     GROUP BY s.id, s.nome, s.poster_url
     ORDER BY ${ordem}
     LIMIT $2 OFFSET $3
-  `, [busca, limite, offset]);
-  res.json(rows);
+  `, [busca, limite, offset, req.infantil]);
 }));
 
 // GET /api/series/episodio/:id  -> página de um episódio (id = titulo.id)
@@ -53,7 +53,8 @@ router.get('/episodio/:id', wrap(async (req, res) => {
     JOIN episodio e ON e.estudio = t.estudio AND e.nome = t.nome
     JOIN serie s    ON s.nome = e.nome_da_serie
     WHERE t.id = $1
-  `, [inteiro(req.params.id)]);
+      AND (NOT $2::boolean OR ${serieLivre('s.nome')})
+  `, [inteiro(req.params.id), req.infantil]);
   if (!rows.length) return res.status(404).json({ erro: 'Episódio não encontrado.' });
   res.json(rows[0]);
 }));
@@ -66,8 +67,10 @@ router.get('/:id', wrap(async (req, res) => {
   const serie = await db.query(`
     SELECT s.id, s.nome, s.descricao, s.poster_url,
            (SELECT ROUND(AVG(a.nota), 1) FROM avalia_serie a WHERE a.nome_da_serie = s.nome) AS nota_media
-    FROM serie s WHERE s.id = $1
-  `, [id]);
+    FROM serie s
+    WHERE s.id = $1
+      AND (NOT $2::boolean OR ${serieLivre('s.nome')})
+  `, [id, req.infantil]);
   if (!serie.rowCount) return res.status(404).json({ erro: 'Série não encontrada.' });
   const s = serie.rows[0];
 
@@ -206,7 +209,9 @@ router.post('/:id/avaliacoes', exigirPerfil, wrap(async (req, res) => {
   const r = await db.query(`
     INSERT INTO avalia_serie (nota, email, perfil, nome_da_serie, comentario)
     SELECT $3::int, p.email, p.nome, s.nome, $4
-    FROM serie s, perfil p WHERE s.id = $1 AND p.id = $2
+    FROM serie s, perfil p
+    WHERE s.id = $1 AND p.id = $2
+      AND (p.tipo <> 'Infantil' OR ${serieLivre('s.nome')})
     ON CONFLICT (email, perfil, nome_da_serie)
     DO UPDATE SET nota = EXCLUDED.nota, comentario = EXCLUDED.comentario, criado_em = now()
   `, [inteiro(req.params.id), idPerfil, nota, comentario]);
@@ -228,7 +233,10 @@ router.post('/:id/watchlist', exigirPerfil, wrap(async (req, res) => {
 
   const ins = await db.query(`
     INSERT INTO lista_de_desejos_serie (email, perfil, nome_da_serie)
-    SELECT p.email, p.nome, s.nome FROM serie s, perfil p WHERE s.id = $1 AND p.id = $2
+     SELECT p.email, p.nome, s.nome
+    FROM serie s, perfil p
+    WHERE s.id = $1 AND p.id = $2
+      AND (p.tipo <> 'Infantil' OR ${serieLivre('s.nome')})
   `, [idSerie, idPerfil]);
   if (!ins.rowCount) return res.status(404).json({ erro: 'Série ou perfil não encontrado.' });
   res.json({ ativo: true });
