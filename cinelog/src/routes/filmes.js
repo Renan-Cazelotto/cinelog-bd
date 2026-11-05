@@ -35,7 +35,8 @@ router.get('/', wrap(async (req, res) => {
     WHERE ($1::text IS NULL OR t.nome ILIKE '%' || $1 || '%')
       AND ($2::text IS NULL OR EXISTS (
             SELECT 1 FROM genero g
-            WHERE g.estudio_titulo = t.estudio AND g.nome_titulo = t.nome AND g.genero = $2) AND (NOT $5::boolean OR t.classificacao_indicativa = 'LIVRE'))
+            WHERE g.estudio_titulo = t.estudio AND g.nome_titulo = t.nome AND g.genero = $2))
+      AND (NOT $5::boolean OR t.classificacao_indicativa = 'LIVRE')
     GROUP BY t.id, t.estudio, t.nome, t.ano_de_lancamento, t.poster_url
     ORDER BY ${ordem}
     LIMIT $3 OFFSET $4
