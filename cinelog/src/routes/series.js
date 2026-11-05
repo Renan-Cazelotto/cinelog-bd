@@ -37,6 +37,7 @@ router.get('/', wrap(async (req, res) => {
     ORDER BY ${ordem}
     LIMIT $2 OFFSET $3
   `, [busca, limite, offset, req.infantil]);
+  res.json(rows);
 }));
 
 // GET /api/series/episodio/:id  -> página de um episódio (id = titulo.id)
