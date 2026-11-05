@@ -1,0 +1,17 @@
+/* Estilos extras das páginas de séries (o resto vem de style.css). */
+.cab-secao { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.migalha { color: var(--suave); margin: 0 0 .5rem; }
+.migalha a { text-decoration: none; }
+.migalha a:hover { text-decoration: underline; }
+
+.temporada { background: var(--superficie); border: 1px solid var(--borda); border-radius: 10px;
+             padding: .75rem 1rem; margin-top: .75rem; }
+.temporada summary { cursor: pointer; display: flex; gap: .75rem; align-items: baseline; flex-wrap: wrap; }
+.temporada > p { margin: .5rem 0 0; }
+.episodios { list-style: none; margin: .6rem 0; padding: 0; }
+.episodios a { display: grid; grid-template-columns: 2rem 5.5rem 1fr auto; gap: .75rem; align-items: center;
+               padding: .5rem .25rem; border-top: 1px solid var(--borda); text-decoration: none; }
+.mini { width: 5.5rem; aspect-ratio: 16 / 9; border-radius: 4px; overflow: hidden; background-size: cover; }
+.mini img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.episodios a:hover { background: var(--superficie-2); }
+.episodios .num { color: var(--suave); font-variant-numeric: tabular-nums; }
