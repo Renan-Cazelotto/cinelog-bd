@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/series.css">
+  <title>Série – CineLog</title>
+</head>
+<body>
+  <header class="topo">
+    <a class="logo" href="index.html">CineLog</a>
+    <nav aria-label="Principal">
+      <a href="index.html">Filmes</a>
+      <a href="series.html" aria-current="page">Séries</a>
+      <a href="perfil.html" id="link-perfil">Meu perfil</a>
+    </nav>
+    <div class="usuario" id="usuario"></div>
+  </header>
+
+  <main id="conteudo"><p class="suave">Carregando…</p></main>
+
+  <dialog id="dlg-temporada">
+    <form id="form-temporada">
+      <h2>Nova temporada</h2>
+      <label>Nome (opcional; se vazio, vira "Temporada N") <input name="nome" maxlength="30"></label>
+      <label>Ano de lançamento <input name="ano_de_lancamento" type="number" min="1888" max="2100" required></label>
+      <label>Descrição (opcional) <textarea name="descricao" rows="3" maxlength="1000"></textarea></label>
+      <p class="erro" id="erro-temporada" role="alert"></p>
+      <div class="fim">
+        <button type="button" data-fechar>Cancelar</button>
+        <button type="submit" class="primario">Salvar temporada</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-episodio">
+    <form id="form-episodio">
+      <h2 id="titulo-episodio">Novo episódio</h2>
+      <label>Título <input name="nome" required maxlength="100"></label>
+      <label>Estúdio <input name="estudio" required maxlength="30"></label>
+      <div class="linha">
+        <label>Ano <input name="ano_de_lancamento" type="number" min="1888" max="2100" required></label>
+        <label>Duração (min) <input name="duracao" type="number" min="1" required></label>
+        <label>Classificação
+          <select name="classificacao_indicativa" required>
+            <option>LIVRE</option><option>6</option><option>10</option><option>12</option>
+            <option>14</option><option>16</option><option>18</option>
+          </select>
+        </label>
+      </div>
+      <label>Sinopse <textarea name="descricao" rows="3" required maxlength="1000"></textarea></label>
+      <label>Link da imagem (opcional) <input name="poster_url" type="url" placeholder="https://..."></label>
+      <label>Diretores (separe por vírgula) <input name="diretores"></label>
+      <label>Elenco (separe por vírgula) <input name="elenco"></label>
+      <p class="erro" id="erro-episodio" role="alert"></p>
+      <div class="fim">
+        <button type="button" data-fechar>Cancelar</button>
+        <button type="submit" class="primario">Salvar episódio</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="rodape">Pôsteres via TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</footer>
+  <div id="aviso" class="aviso" role="status"></div>
+  <script src="js/comum.js"></script>
+  <script src="js/serie.js"></script>
+</body>
+</html>

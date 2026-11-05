@@ -75,3 +75,16 @@ com o título. Se usar imagens do TMDB, mantenha o aviso de atribuição do roda
 ## Deploy (Render)
 Web Service com `npm install` / `npm start` e as variáveis `DATABASE_URL` (Neon) e `JWT_SECRET`.
 Depois do primeiro deploy, torne sua conta master com o `UPDATE` acima.
+
+## Séries, temporadas e episódios
+Rodar uma vez: `npm run db:init -- migracao_series.sql` (depois de `migracao.sql`).
+
+| Rota | O que faz |
+|---|---|
+| `GET /api/series?busca=&ordem=&pagina=` | Explorar séries (média, total de notas, nº de temporadas) |
+| `GET /api/series/:id` | Série com temporadas e episódios, histograma, reviews e o que o perfil logado já fez |
+| `GET /api/series/episodio/:id` | Página de um episódio (`id` = `titulo.id`) |
+| `POST /api/series` · `/:id/temporadas` · `/temporadas/:id/episodios` | Cadastro (**somente conta master**) |
+| `POST /api/series/:id/avaliacoes` · `/watchlist` | `{nota, comentario}` / alterna; sempre com o perfil da sessão |
+
+Telas: `series.html`, `serie.html?id=`, `episodio.html?id=` (+ `css/series.css`).

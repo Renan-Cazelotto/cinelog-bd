@@ -12,7 +12,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Páginas que exigem login: sem sessão, redireciona para a tela de login.
-const PAGINAS_PROTEGIDAS = new Set(['/', '/index.html', '/filme.html', '/perfil.html', '/escolher-perfil.html']);
+const PAGINAS_PROTEGIDAS = new Set(['/', '/index.html', '/filme.html', '/perfil.html', '/escolher-perfil.html',
+  '/series.html', '/serie.html', '/episodio.html']);
 app.use((req, res, next) => {
   if (PAGINAS_PROTEGIDAS.has(req.path) && !lerSessao(req)) return res.redirect('/login.html');
   next();
@@ -21,7 +22,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // --- API ---
 app.use('/api/auth', require('./src/routes/auth'));                         // login, cadastro, perfis da conta
-app.use('/api/filmes', exigirLogin, carregarTipoPerfil, require('./src/routes/filmes'));
+
+app.use('/api/filmes', exigirLogin, carregarTipoPerfil, require('./src/routes/filmes'));        // tudo abaixo exige login
+app.use('/api/series', exigirLogin, carregarTipoPerfil, require('./src/routes/series'));
 app.use('/api/generos', exigirLogin, carregarTipoPerfil, require('./src/routes/generos'));
 app.use('/api/perfis', exigirLogin, carregarTipoPerfil, require('./src/routes/perfis'));
 

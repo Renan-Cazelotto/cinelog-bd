@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/series.css">
+  <title>CineLog – Séries</title>
+</head>
+<body>
+  <header class="topo">
+    <a class="logo" href="index.html">CineLog</a>
+    <nav aria-label="Principal">
+      <a href="index.html">Filmes</a>
+      <a href="series.html" aria-current="page">Séries</a>
+      <a href="perfil.html" id="link-perfil">Meu perfil</a>
+    </nav>
+    <div class="usuario" id="usuario"></div>
+  </header>
+
+  <main>
+    <form class="filtros" id="filtros" role="search">
+      <input type="search" id="busca" placeholder="Buscar série pelo nome" aria-label="Buscar série pelo nome">
+      <select id="ordem" aria-label="Ordenar por">
+        <option value="nota">Melhor avaliadas</option>
+        <option value="populares">Mais avaliadas</option>
+        <option value="titulo">Ordem alfabética</option>
+      </select>
+      <button type="button" id="btn-novo" class="primario" hidden>+ Adicionar série</button>
+    </form>
+    <p id="contagem" class="contagem" aria-live="polite"></p>
+    <section id="grade" class="grade" aria-label="Séries"></section>
+    <button type="button" id="mais" class="mais" hidden>Carregar mais</button>
+  </main>
+
+  <dialog id="dlg-novo">
+    <form id="form-novo">
+      <h2>Adicionar série</h2>
+      <label>Nome <input name="nome" required maxlength="30"></label>
+      <label>Sinopse <textarea name="descricao" rows="3" required maxlength="1000"></textarea></label>
+      <label>Link da imagem do pôster (opcional) <input name="poster_url" type="url" placeholder="https://..."></label>
+      <p class="erro" id="erro-novo" role="alert"></p>
+      <div class="fim">
+        <button type="button" data-fechar>Cancelar</button>
+        <button type="submit" class="primario">Salvar série</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="rodape">Pôsteres via TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</footer>
+  <div id="aviso" class="aviso" role="status"></div>
+  <script src="js/comum.js"></script>
+  <script src="js/series.js"></script>
+</body>
+</html>
