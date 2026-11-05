@@ -1,3 +1,17 @@
+## Conta padrão  !!!IMPORTANTE!!!
+
+Contas de usuários comuns, que não podem adicionar filmes, séries, temporadas e episódios, apenas avaliações e curtidas. Algumas contas de teste:
+  -*Login*: beatriz@email.com          *Senha*: bia456
+  -*Login*: carlos.lima@email.com      *Senha*: carlos123
+  -*Login*: diego.fer@email.com        *Senha*: diego123
+  -*Login*: fernanda@email.com         *Senha*: fer12345
+
+## Conta master  !!!IMPORTANTE!!!
+
+Nenhuma conta é master por padrão, então pelo já atribuímos isso a uma para realizar os testes: 
+*Login*: alessandro@email.com
+*Senha*: senha123
+
 # CineLog
 
 Um espaço para registrar e avaliar filmes e séries, no estilo Letterboxd. Cada pessoa entra com a sua conta, escolhe um dos perfis (até cinco por conta) e guarda ali as próprias notas, curtidas e a lista de títulos que quer assistir.
@@ -32,51 +46,8 @@ As telas são alimentadas por consultas com junção de tabelas, agregações e 
 
 Node.js e Express no servidor, PostgreSQL hospedado no Neon, HTML, CSS e JavaScript puro no front-end, e publicação no Render. A senha é guardada com bcrypt e o login usa um cookie de sessão.
 
-## Rodando localmente
-
-Você precisa do Node.js 18 ou superior e de um banco PostgreSQL (usamos o Neon).
-
-```bash
-git clone https://github.com/Renan-Cazelotto/cinelog-bd.git
-cd cinelog-bd/cinelog
-npm install
-```
-
-Crie um arquivo `.env` dentro de `cinelog/`:
-
-```
-DATABASE_URL=a connection string do seu banco
-JWT_SECRET=um segredo qualquer com pelo menos 16 caracteres
-```
-
-Prepare o banco. Se ele estiver vazio:
-
-```bash
-npm run db:init -- streaming.sql migracao.sql migracao_series.sql
-```
-
-Se ele já tiver as tabelas de `streaming.sql`, rode só as migrações:
-
-```bash
-npm run db:init -- migracao.sql migracao_series.sql
-```
-
-Depois é só iniciar com `npm run dev` e abrir http://localhost:3000.
-
-## Conta master
-
-Para cadastrar filmes e séries, crie uma conta pelo site e rode no banco:
-
-```sql
-UPDATE conta SET master = true WHERE email = 'seu@email.com';
-```
-
-## Publicação no Render
-
-Web Service com a pasta raiz `cinelog`, comando de build `npm install`, comando de início `npm start` e as variáveis `DATABASE_URL` e `JWT_SECRET`.
-
 ## Créditos
 
-Pôsteres via TMDB. *This product uses the TMDB API but is not endorsed or certified by TMDB.*
+Pôsteres via TMDB pegos manualmente.
 
-Autores: Renan Cazelotto e _(demais integrantes)_.
+Autores: Renan Cazelotto e Nívea Batoni.
