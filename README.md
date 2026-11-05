@@ -1,15 +1,15 @@
 ## Conta padrão  !!!IMPORTANTE!!!
 
-Contas de usuários comuns, que não podem adicionar filmes, séries, temporadas e episódios, apenas avaliações e curtidas. Algumas contas de teste:
-  -*Login*: beatriz@email.com          *Senha*: bia456
-  -*Login*: carlos.lima@email.com      *Senha*: carlos123
-  -*Login*: diego.fer@email.com        *Senha*: diego123
+Contas de usuários comuns, que não podem adicionar filmes, séries, temporadas e episódios, apenas avaliações e curtidas. Algumas contas de teste:\
+  -*Login*: beatriz@email.com          *Senha*: bia456\
+  -*Login*: carlos.lima@email.com      *Senha*: carlos123\
+  -*Login*: diego.fer@email.com        *Senha*: diego123\
   -*Login*: fernanda@email.com         *Senha*: fer12345
 
 ## Conta master  !!!IMPORTANTE!!!
 
-Nenhuma conta é master por padrão, então pelo já atribuímos isso a uma para realizar os testes: 
-*Login*: alessandro@email.com
+Nenhuma conta é master por padrão, então pelo já atribuímos isso a uma para realizar os testes: \
+*Login*: alessandro@email.com\
 *Senha*: senha123
 
 # CineLog
