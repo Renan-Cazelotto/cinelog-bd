@@ -47,10 +47,11 @@ router.get('/:id/avaliacoes', wrap(async (req, res) => {
     FROM avalia_filme a
     JOIN perfil p ON p.email = a.email AND p.nome = a.perfil
     JOIN titulo t ON t.estudio = a.estudio AND t.nome = a.nome_do_filme
-    WHERE p.id = $1
+   WHERE p.id = $1
+      AND (NOT $2::boolean OR t.classificacao_indicativa = 'LIVRE')
     ORDER BY a.criado_em DESC
     LIMIT 60
-  `, [inteiro(req.params.id)]);
+ `, [inteiro(req.params.id), req.infantil]);
   res.json(rows);
 }));
 
@@ -60,10 +61,11 @@ router.get('/:id/watchlist', wrap(async (req, res) => {
     SELECT t.id, t.nome, t.ano_de_lancamento, t.poster_url
     FROM lista_de_desejo_filme l
     JOIN perfil p ON p.email = l.email AND p.nome = l.perfil
-    JOIN titulo t ON t.estudio = l.estudio AND t.nome = l.nome_do_filme
+     JOIN titulo t ON t.estudio = l.estudio AND t.nome = l.nome_do_filme
     WHERE p.id = $1
+      AND (NOT $2::boolean OR t.classificacao_indicativa = 'LIVRE')
     ORDER BY t.nome
-  `, [inteiro(req.params.id)]);
+  `, [inteiro(req.params.id), req.infantil]);
   res.json(rows);
 }));
 

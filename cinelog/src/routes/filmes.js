@@ -36,10 +36,11 @@ router.get('/', wrap(async (req, res) => {
       AND ($2::text IS NULL OR EXISTS (
             SELECT 1 FROM genero g
             WHERE g.estudio_titulo = t.estudio AND g.nome_titulo = t.nome AND g.genero = $2))
+      AND (NOT $5::boolean OR t.classificacao_indicativa = 'LIVRE')
     GROUP BY t.id, t.estudio, t.nome, t.ano_de_lancamento, t.poster_url
     ORDER BY ${ordem}
     LIMIT $3 OFFSET $4
-  `, [busca, genero, limite, offset]);
+  `, [busca, genero, limite, offset, req.infantil]);
 
   res.json(rows);
 }));
@@ -66,7 +67,8 @@ router.get('/:id', wrap(async (req, res) => {
     FROM titulo t
     JOIN filme f ON f.estudio = t.estudio AND f.nome = t.nome
     WHERE t.id = $1
-  `, [id]);
+      AND (NOT $2::boolean OR t.classificacao_indicativa = 'LIVRE')
+  `, [id, req.infantil]);
   if (filme.rowCount === 0) return res.status(404).json({ erro: 'Filme não encontrado.' });
   const f = filme.rows[0];
 
@@ -175,6 +177,7 @@ router.post('/:id/avaliacoes', exigirPerfil, wrap(async (req, res) => {
     SELECT $3::int, t.estudio, t.nome, p.email, p.nome, $4
     FROM titulo t, perfil p
     WHERE t.id = $1 AND p.id = $2
+      AND (p.tipo <> 'Infantil' OR t.classificacao_indicativa = 'LIVRE')
     ON CONFLICT (estudio, nome_do_filme, email, perfil)
     DO UPDATE SET nota = EXCLUDED.nota, comentario = EXCLUDED.comentario, criado_em = now()
   `, [idFilme, idPerfil, nota, comentario]);
@@ -206,7 +209,9 @@ function alternar(tabela) {
     const ins = await db.query(`
       INSERT INTO ${tabela} (estudio, nome_do_filme, email, perfil)
       SELECT t.estudio, t.nome, p.email, p.nome
-      FROM titulo t, perfil p WHERE t.id = $1 AND p.id = $2
+      FROM titulo t, perfil p
+      WHERE t.id = $1 AND p.id = $2
+        AND (p.tipo <> 'Infantil' OR t.classificacao_indicativa = 'LIVRE')
     `, [idFilme, idPerfil]);
     if (ins.rowCount === 0) return res.status(404).json({ erro: 'Filme ou perfil não encontrado.' });
     res.json({ ativo: true });
